@@ -1,66 +1,78 @@
+const { errorHandler } = require("../middlewares/errorMiddleware");
 const Goal = require("../models/goals");
 
-//TODO: Error Handling with thrown error not working properly
 //@desc Get Goals
 //@route GET /api/goals/
 //@access Private
-const getGoals = async (req, res) => {
+const getGoals = async (req, res, next) => {
   try {
     const goals = await Goal.find();
     res.status(200).json({ goals });
   } catch (error) {
-    res.send(error.message);
+    next(error);
   }
 };
 
 //@desc Set Goals
 //@route POST /api/goals/
 //@access Private
-const setGoals = async (req, res) => {
-  if (!req.body.text) {
-    res.status(400);
-    throw new Error("Please add a text field");
-  }
-
+const setGoal = async (req, res, next) => {
   try {
-    goal = await Goal.create({ text: req.body.text });
+    if (!req.body.text) {
+      res.status(400);
+      throw new Error("Please add a text field");
+    }
+
+    const goal = await Goal.create({ text: req.body.text });
     res.status(200).json(goal);
   } catch (error) {
-    console.log(error);
-    res.send(error);
+    next(error);
   }
 };
 
 //@desc Update Goals
 //@route PUT /api/goals/:id
 //@access Private
-const updateGoals = async (req, res) => {
+const updateGoal = async (req, res, next) => {
   try {
-    Goal.findByIdAndUpdate(req.params.id, req.body.text, { new: true });
+    const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+
+    if (!updatedGoal) {
+      res.status(400);
+      throw new Error("ID is not valid");
+    }
+
     res.status(200).json({
       message: `Updated goal ID : ${req.params.id}`,
-      updateText: await Goal.findById(req.params.id).text,
+      updatedText: updatedGoal.text,
     });
   } catch (error) {
-    res.send(error);
+    next(error);
   }
 };
 
 //@desc Delete Goals
 //@route DELETE /api/goals/:id
 //@access Private
-const deleteGoals = async (req, res) => {
+const deleteGoal = async (req, res, next) => {
   try {
-    await Goal.findByIdAndDelete(req.params.id);
-    res
-      .status(200)
-      .json({
-        message: `Delete goal Id: ${req.params.id}`,
-        deletedText: await Goal.findById(req.params.id).text,
-      });
+    const goal = await Goal.findById(req.params.id);
+
+    if (!goal) {
+      res.status(400);
+      throw new Error("ID is not valid");
+    }
+
+    res.status(200).json({
+      message: `Delete goal Id: ${req.params.id}`,
+      deletedGoal: await Goal.findById(req.params.id),
+    });
+    await goal.remove()
   } catch (error) {
-    res.send(error);
+    next(error);
   }
 };
 
-module.exports = { getGoals, setGoals, updateGoals, deleteGoals };
+module.exports = { getGoals, setGoal, updateGoal, deleteGoal };

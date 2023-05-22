@@ -13,6 +13,8 @@ app.use(express.urlencoded({ extended: false }));
 connectDB();//connecting to database
 
 app.use("/api/goals", require("./routes/goalRoutes"));// API routes for "/api/goals" root
+app.use("/api/users", require("./routes/userRoutes"));// API routes for "/api/user" root
+
 
 app.use(errorHandler)// Built-in error handler
 app.listen(PORT, () => {
