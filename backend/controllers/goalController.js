@@ -1,13 +1,14 @@
-const { errorHandler } = require("../middlewares/errorMiddleware");
 const Goal = require("../models/goals");
+const User = require("../models/users");
 
 //@desc Get Goals
 //@route GET /api/goals/
 //@access Private
 const getGoals = async (req, res, next) => {
   try {
-    const goals = await Goal.find();
-    res.status(200).json({ goals });
+    const goals = await Goal.find({ user: req.user.id });
+    const user = await User.findById(req.user.id);
+    res.status(200).json({ user: user.name, goals });
   } catch (error) {
     next(error);
   }
@@ -23,7 +24,7 @@ const setGoal = async (req, res, next) => {
       throw new Error("Please add a text field");
     }
 
-    const goal = await Goal.create({ text: req.body.text });
+    const goal = await Goal.create({ text: req.body.text, user: req.user.id });
     res.status(200).json(goal);
   } catch (error) {
     next(error);
@@ -35,14 +36,29 @@ const setGoal = async (req, res, next) => {
 //@access Private
 const updateGoal = async (req, res, next) => {
   try {
+    const user = await User.findById(req.user.id);
+    const goal = await Goal.findById(req.params.id);
+
+    if (!goal) {
+      res.status(400);
+      throw new Error("Goal ID is not valid");
+    }
+
+    //check if user is found
+    if (!user) {
+      res.status(401);
+      throw new Error("User not found");
+    }
+
+    // check if goal is the active user's goal
+    if (goal.user.toString() !== user.id) {
+      res.status(401);
+      throw new Error("User not authorized to update goal");
+    }
+
     const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-
-    if (!updatedGoal) {
-      res.status(400);
-      throw new Error("ID is not valid");
-    }
 
     res.status(200).json({
       message: `Updated goal ID : ${req.params.id}`,
@@ -59,17 +75,30 @@ const updateGoal = async (req, res, next) => {
 const deleteGoal = async (req, res, next) => {
   try {
     const goal = await Goal.findById(req.params.id);
+    const user = await User.findById(req.user.id);
 
     if (!goal) {
       res.status(400);
-      throw new Error("ID is not valid");
+      throw new Error("Goal ID is not valid");
+    }
+
+    //check if user is found
+    if (!user) {
+      res.status(401);
+      throw new Error("User not found");
+    }
+
+    // check if goal is the active user's goal
+    if (goal.user.toString() !== user.id) {
+      res.status(401);
+      throw new Error("User not authorized to delete goal");
     }
 
     res.status(200).json({
       message: `Delete goal Id: ${req.params.id}`,
       deletedGoal: await Goal.findById(req.params.id),
     });
-    await goal.remove()
+    await goal.remove();
   } catch (error) {
     next(error);
   }
