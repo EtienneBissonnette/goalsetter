@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 import { GoSignIn } from "react-icons/go";
 
 function Login() {
@@ -7,7 +7,7 @@ function Login() {
     password: "",
   });
 
-  const { name, email, password, confirmPassword } = formData;
+  const { email, password } = formData;
 
   const onChange = (e) => {
     setFormData((prevState) => ({
