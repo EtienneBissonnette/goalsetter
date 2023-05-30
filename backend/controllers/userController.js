@@ -2,7 +2,6 @@ const User = require("../models/users");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-//TODO: Create controller userHome
 
 //@desc create User
 //@route POST /api/users/
@@ -37,8 +36,6 @@ const createUser = async (req, res, next) => {
     if (user) {
       res.status(201).send({
         name: user.name,
-        email: user.email,
-        _id: user.id,
         token: genJWT(user.id),
       });
     } else {
