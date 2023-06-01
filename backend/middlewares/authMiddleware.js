@@ -15,7 +15,7 @@ const protect = async (req, res, next) => {
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
       //get user from token
-      req.user = await User.findById(decodedToken.id).select("-password"); //user object without hashed password
+      req.user = await User.findById(decodedToken.id).select("-password"); //user object without hashed password added in req
       next();
     } catch (error) {
       console.log(error);

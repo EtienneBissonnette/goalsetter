@@ -36,7 +36,6 @@ const setGoal = async (req, res, next) => {
 //@access Private
 const updateGoal = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id);
     const goal = await Goal.findById(req.params.id);
 
     if (!goal) {
@@ -45,13 +44,13 @@ const updateGoal = async (req, res, next) => {
     }
 
     //check if user is found
-    if (!user) {
+    if (!req.user) {
       res.status(401);
       throw new Error("User not found");
     }
 
     // check if goal is the active user's goal
-    if (goal.user.toString() !== user.id) {
+    if (goal.user.toString() !== req.user.id) {
       res.status(401);
       throw new Error("User not authorized to update goal");
     }
@@ -75,7 +74,6 @@ const updateGoal = async (req, res, next) => {
 const deleteGoal = async (req, res, next) => {
   try {
     const goal = await Goal.findById(req.params.id);
-    const user = await User.findById(req.user.id);
 
     if (!goal) {
       res.status(400);
@@ -83,13 +81,13 @@ const deleteGoal = async (req, res, next) => {
     }
 
     //check if user is found
-    if (!user) {
+    if (!req.user) {
       res.status(401);
       throw new Error("User not found");
     }
 
     // check if goal is the active user's goal
-    if (goal.user.toString() !== user.id) {
+    if (goal.user.toString() !== req.user.id) {
       res.status(401);
       throw new Error("User not authorized to delete goal");
     }

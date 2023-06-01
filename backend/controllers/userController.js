@@ -2,7 +2,6 @@ const User = require("../models/users");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-
 //@desc create User
 //@route POST /api/users/
 //@access Public
@@ -72,13 +71,12 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-//@desc login User
+//@desc home of User
 //@route GET /api/users/me
 //@access Private
-const homeUser = async (req, res, next) => {
+const homeUser = (req, res, next) => {
   try {
-    const { _id, name, email } = await User.findById(req.user.id);
-    res.status(200).json({ id: _id, name: name, email: email });
+    res.status(200).json(req.user);
   } catch (error) {
     console.log(error.message);
     next(error);
