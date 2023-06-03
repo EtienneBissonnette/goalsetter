@@ -3,13 +3,13 @@ import axios from "axios";
 const API_URL = "api/goals/";
 
 //get active user goals
-const getGoals = async (userData) => {
-  const response = await axios.get(API_URL, userData);
-
-  if (response.data) {
-    localStorage.setItem("goals", JSON.stringify(response.data));
-  }
-
+const getGoals = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.get(API_URL, config);
   return response.data;
 };
 
