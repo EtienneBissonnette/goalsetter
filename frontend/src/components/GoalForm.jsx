@@ -20,11 +20,11 @@ function GoalForm() {
     <section className="form">
       <form onSubmit={onSubmit}>
         <div className="form-group">
-          <label htmlFor="text">Goal</label>
           <input
             type="text"
             name="text"
             id="text"
+            placeholder="Input goal"
             value={text}
             onChange={onChange}
           ></input>

@@ -8,7 +8,7 @@ const getGoals = async (req, res, next) => {
   try {
     const goals = await Goal.find({ user: req.user.id });
     const user = await User.findById(req.user.id);
-    res.status(200).json({ user: user.name, goals });
+    res.status(200).json(goals);
   } catch (error) {
     next(error);
   }
@@ -91,12 +91,15 @@ const deleteGoal = async (req, res, next) => {
       res.status(401);
       throw new Error("User not authorized to delete goal");
     }
+    
 
     res.status(200).json({
       message: `Delete goal Id: ${req.params.id}`,
       deletedGoal: await Goal.findById(req.params.id),
     });
+
     await goal.remove();
+
   } catch (error) {
     next(error);
   }
