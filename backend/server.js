@@ -4,10 +4,20 @@ const dotenv = require("dotenv").config();
 const colors = require("colors");
 const { errorHandler } = require("./middlewares/errorMiddleware");
 const { connectDB } = require("./config/db");
+const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(
+  cors({
+    origin: [
+      "https://goalsetter-h7ak.onrender.com",
+      "https://goal-setter-bd0f9.web.app",
+      "http://localhost:3000",
+    ],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
