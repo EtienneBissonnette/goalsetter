@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/goals/";
+const API_URL = "https://goalsetter-crud.onrender.com/api/goals/";
 
 //get active user goals
 const getGoals = async (token) => {
